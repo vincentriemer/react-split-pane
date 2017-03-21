@@ -25,8 +25,11 @@ const BasicVerticalExample = () => {
 };
 
 const BasicHorizontalExample = () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
     return (
-        <SplitPane split="horizontal">
+        <SplitPane width={width} height={height} split="horizontal">
             <div />
             <div />
         </SplitPane>

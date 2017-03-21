@@ -28,10 +28,10 @@ class SplitPane extends Component {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onTouchMove = this.onTouchMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
-
         this.state = {
             active: false,
             resized: false,
+            size: args[0].size || args[0].defaultSize || args[0].minSize,
         };
     }
 
@@ -117,10 +117,19 @@ class SplitPane extends Component {
 
                         let newSize = size - newPosition;
 
+                        const inferredMax = (() => {
+                            if (this.props.split === 'horizontal') {
+                                return this.props.height - this.props.minSize;
+                            }
+                            return this.props.width - this.props.minSize;
+                        })();
+
                         if (newSize < this.props.minSize) {
                             newSize = this.props.minSize;
                         } else if ((this.props.maxSize !== undefined) && (newSize > maxSize)) {
                             newSize = maxSize;
+                        } else if (this.props.maxSize === undefined && (newSize > inferredMax)) {
+                            newSize = inferredMax;
                         } else {
                             this.setState({
                                 position: current,
@@ -133,6 +142,7 @@ class SplitPane extends Component {
                         }
                         this.setState({
                             draggedSize: newSize,
+                            size: newSize,
                         });
                         ref.setState({
                             size: newSize,
@@ -173,7 +183,7 @@ class SplitPane extends Component {
     }
 
     render() {
-        const { split, allowResize } = this.props;
+        const { split, allowResize, width, height } = this.props;
         const disabledClass = allowResize ? '' : 'disabled';
 
         const style = Object.assign({},
@@ -181,6 +191,8 @@ class SplitPane extends Component {
                 display: 'flex',
                 flex: 1,
                 position: 'relative',
+                width,
+                height,
                 outline: 'none',
                 overflow: 'hidden',
                 MozUserSelect: 'text',
@@ -192,20 +204,16 @@ class SplitPane extends Component {
         if (split === 'vertical') {
             Object.assign(style, {
                 flexDirection: 'row',
-                height: '100%',
-                position: 'absolute',
-                left: 0,
-                right: 0,
+                // position: 'absolute',
+                // left: 0,
+                // right: 0,
             });
         } else {
             Object.assign(style, {
                 flexDirection: 'column',
-                height: '100%',
-                minHeight: '100%',
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                width: '100%',
+                // position: 'absolute',
+                // top: 0,
+                // bottom: 0,
             });
         }
 
@@ -224,34 +232,57 @@ class SplitPane extends Component {
             this.props.pane2Style || {}),
         );
 
+        const primarySize = this.state.size;
+        const secondarySize = split === 'horizontal' ? height - primarySize - 11 : width - primarySize - 11;
+
+        let primaryWidth,
+            primaryHeight,
+            secondaryWidth,
+            secondaryHeight;
+
+        switch (split) {
+        case 'horizontal':
+            primaryWidth = width;
+            secondaryWidth = width;
+            primaryHeight = primarySize;
+            secondaryHeight = secondarySize;
+            break;
+        case 'vertical':
+            primaryHeight = width;
+            secondaryHeight = width;
+            primaryWidth = primarySize;
+            secondaryWidth = secondarySize;
+            break;
+        default:
+            break;
+        }
+
         return (
             <div
                 className={classes.join(' ')}
                 style={this.props.prefixer.prefix(style)}
                 ref={(node) => { this.splitPane = node; }}
             >
-
                 <Pane
                     ref={(node) => { this.pane1 = node; }}
                     key="pane1" className="Pane1"
                     style={pane1Style}
                     split={split}
-                    size={this.props.primary === 'first' ?
-                      this.props.size || this.props.defaultSize || this.props.minSize :
-                      undefined
-                    }
+                    width={this.props.primary === 'first' ? primaryWidth : secondaryWidth}
+                    height={this.props.primary === 'first' ? primaryHeight : secondaryHeight}
                 >
                     {children[0]}
                 </Pane>
                 <Resizer
                     ref={(node) => { this.resizer = node; }}
                     key="resizer"
+                    width={width}
+                    height={height}
                     className={disabledClass}
                     resizerClassName={this.props.resizerClassName}
                     onMouseDown={this.onMouseDown}
                     onTouchStart={this.onTouchStart}
                     onTouchEnd={this.onMouseUp}
-                    style={this.props.resizerStyle || {}}
                     split={split}
                 />
                 <Pane
@@ -260,10 +291,8 @@ class SplitPane extends Component {
                     className="Pane2"
                     style={pane2Style}
                     split={split}
-                    size={this.props.primary === 'second' ?
-                      this.props.size || this.props.defaultSize || this.props.minSize :
-                      undefined
-                    }
+                    width={this.props.primary === 'second' ? primaryWidth : secondaryWidth}
+                    height={this.props.primary === 'second' ? primaryHeight : secondaryHeight}
                 >
                     {children[1]}
                 </Pane>
@@ -273,6 +302,8 @@ class SplitPane extends Component {
 }
 
 SplitPane.propTypes = {
+    width: PropTypes.number,
+    height: PropTypes.number,
     primary: PropTypes.oneOf(['first', 'second']),
     minSize: PropTypes.oneOfType([
         React.PropTypes.string,

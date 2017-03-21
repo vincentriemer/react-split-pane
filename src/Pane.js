@@ -15,24 +15,30 @@ class Pane extends Component {
         const split = this.props.split;
         const classes = ['Pane', split, this.props.className];
 
-        const style = Object.assign({}, this.props.style || {}, {
-            flex: 1,
-            position: 'relative',
-            outline: 'none',
-        });
+        const style = Object.assign({}, this.props.style || {}, {});
 
-        if (this.state.size !== undefined) {
-            if (split === 'vertical') {
-                style.width = this.state.size;
-            } else {
-                style.height = this.state.size;
-                style.display = 'flex';
-            }
-            style.flex = 'none';
-        }
+        // if (this.state.size !== undefined) {
+        //     if (split === 'vertical') {
+        //         style.width = this.state.size;
+        //     } else {
+        //         style.height = this.state.size;
+        //         style.display = 'flex';
+        //     }
+        //     style.flex = 'none';
+        // }
+
+        const { width, height } = this.props;
+
+        style.width = width;
+        style.height = height;
 
         return (
-            <div className={classes.join(' ')} style={this.props.prefixer.prefix(style)}>{this.props.children}</div>
+            <div className={classes.join(' ')} style={this.props.prefixer.prefix(style)}>
+                {React.cloneElement(
+                    React.Children.only(this.props.children),
+                    { width, height },
+                )}
+            </div>
         );
     }
 }
@@ -47,6 +53,8 @@ Pane.propTypes = {
         React.PropTypes.string,
         React.PropTypes.number,
     ]),
+    width: PropTypes.number,
+    height: PropTypes.number,
 };
 
 Pane.defaultProps = {
