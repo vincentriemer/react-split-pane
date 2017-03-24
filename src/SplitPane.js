@@ -183,7 +183,7 @@ class SplitPane extends Component {
     }
 
     render() {
-        const { split, allowResize, width, height } = this.props;
+        const { split, allowResize, width, height, resizerSize } = this.props;
         const disabledClass = allowResize ? '' : 'disabled';
 
         const style = Object.assign({},
@@ -233,7 +233,7 @@ class SplitPane extends Component {
         );
 
         const primarySize = this.state.size;
-        const secondarySize = split === 'horizontal' ? height - primarySize - 11 : width - primarySize - 11;
+        const secondarySize = split === 'horizontal' ? height - primarySize - resizerSize : width - primarySize - resizerSize;
 
         let primaryWidth,
             primaryHeight,
@@ -248,10 +248,10 @@ class SplitPane extends Component {
             secondaryHeight = secondarySize;
             break;
         case 'vertical':
-            primaryHeight = width;
-            secondaryHeight = width;
             primaryWidth = primarySize;
             secondaryWidth = secondarySize;
+            primaryHeight = width;
+            secondaryHeight = width;
             break;
         default:
             break;
@@ -278,6 +278,7 @@ class SplitPane extends Component {
                     key="resizer"
                     width={width}
                     height={height}
+                    size={resizerSize}
                     className={disabledClass}
                     resizerClassName={this.props.resizerClassName}
                     onMouseDown={this.onMouseDown}

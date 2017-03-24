@@ -17,16 +17,6 @@ class Pane extends Component {
 
         const style = Object.assign({}, this.props.style || {}, {});
 
-        // if (this.state.size !== undefined) {
-        //     if (split === 'vertical') {
-        //         style.width = this.state.size;
-        //     } else {
-        //         style.height = this.state.size;
-        //         style.display = 'flex';
-        //     }
-        //     style.flex = 'none';
-        // }
-
         const { width, height } = this.props;
 
         style.width = width;

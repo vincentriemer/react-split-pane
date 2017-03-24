@@ -7,15 +7,14 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.2 (KHTML, like 
 class Resizer extends Component {
 
     render() {
-        const { split, className, resizerClassName, width, height } = this.props;
+        const { split, className, resizerClassName, width, height, size } = this.props;
         const classes = [resizerClassName, split, className];
         return (
             <span
                 className={classes.join(' ')}
                 style={this.props.prefixer.prefix(this.props.style) || {
-                    width: split === 'horizontal' ? width : 11,
-                    height: split === 'vertical' ? height : 11,
-                    backgroundColor: '#ccc',
+                    width: split === 'horizontal' ? width : size,
+                    height: split === 'vertical' ? height : size,
                 }}
                 onMouseDown={(event) => {
                     this.props.onMouseDown(event);
