@@ -250,8 +250,8 @@ class SplitPane extends Component {
         case 'vertical':
             primaryWidth = primarySize;
             secondaryWidth = secondarySize;
-            primaryHeight = width;
-            secondaryHeight = width;
+            primaryHeight = height;
+            secondaryHeight = height;
             break;
         default:
             break;
